@@ -1,74 +1,42 @@
-# Financial-Ai-Chat-bot
-# 💬 AI-Powered Financial Chatbot 🤖📊
+# Financial document chatbot
 
-Welcome to my **Financial Chatbot**—a Generative AI-powered assistant that extracts and explains complex financial data from SEC filings (10-Ks & 10-Qs) in plain English. Built as part of BCG's GenAI Virtual Experience on Forage, this project showcases the potential of LLMs + rule-based logic in financial advisory and consulting domains.
+A prototype that answers plain-English questions about 10-K and 10-Q filings —
+"has revenue grown year on year", "what are the stated risk factors" — by pulling
+the figures out of the filings and explaining them.
 
----
+Built during BCG's GenAI virtual experience on Forage. It is a simulation
+exercise, not production work, and is here because the design choice in it is one
+I have kept making since.
 
-## 🔍 Project Overview
+## The design choice
 
-In this simulation, I acted as a consultant on BCG's GenAI team and developed a prototype chatbot that:
+Extraction is **rule-based over parsed financial statements**, and the language
+model only explains what extraction found. It is never asked to read a filing and
+report a number.
 
-✅ Parses and interprets 10-K and 10-Q financial reports  
-✅ Uses **Python** and **pandas** for data extraction and cleaning  
-✅ Applies **rule-based logic** to surface red flags, growth signals, and insights  
-✅ Delivers human-readable answers to financial queries like “What are the company’s main risk factors?” or “Has revenue increased YoY?”
+That split matters more in finance than almost anywhere else. A model asked for
+"revenue growth" will produce a confident, plausible, wrongly-rounded figure, and
+nothing downstream can tell it apart from a right one. Deriving the figure
+deterministically and letting the model do only the part it is good at — turning
+a computed number into a sentence a person can read — means the arithmetic is
+checkable and the prose is disposable.
 
----
+The same idea, taken much further and with a signed audit trail behind it, is
+[Custody](https://github.com/Himansh97/custody).
 
-## 🛠️ Tech Stack
+## What is here
 
-| Tool        | Purpose                           |
-|-------------|------------------------------------|
-| 🐍 Python    | Core scripting & logic             |
-| 📊 pandas    | Financial data manipulation        |
-| 💡 Rule Engine | Custom logic for chatbot responses |
-| 🧠 GenAI Prompting | Natural language query handling |
-| 📁 SEC Reports | 10-K & 10-Q data sources         |
+```
+financial-chatbot.ipynb   extraction, analysis and the chat loop
+financial-chatbot.html    rendered notebook, readable without running anything
+```
 
----
+Built with Python and pandas. Open the `.html` to read it; run the `.ipynb` to
+work with it.
 
-## ✨ Key Features
+## Limits
 
-- 📘 **SEC Report Parsing**: Extracts key sections from large filings  
-- 🧾 **Financial Insight Generation**: Highlights revenue trends, debt risks, and market strategy  
-- 🧠 **Conversational UI** *(CLI or notebook)*: Chat-like Q&A for intuitive analysis  
-- 🧪 **Explainable AI**: Combines GenAI output with hardcoded financial logic  
-- 🔍 **Use Case Ready**: Designed for analysts, consultants, and investors
-
----
-
-## 📸 Demo Preview
-
-> **User**: "What is the company’s revenue trend over the last 3 quarters?"  
-> **Chatbot**: “The company's revenue has shown consistent growth, increasing from $2.3B in Q1 to $2.9B in Q3, indicating a positive trajectory.”
-
-> **User**: "Are there any debt-related concerns?"  
-> **Chatbot**: “Yes, the long-term debt increased by 18% YoY, while interest coverage ratio declined, suggesting higher financial risk.”
-
----
-
-## 🧠 What I Learned
-
-- How to **structure rule-based NLP systems** in financial contexts  
-- Data wrangling skills using `pandas` on unstructured text from SEC filings  
-- How to bridge **domain knowledge** with **AI tooling** for impactful outcomes  
-- The **importance of explainability** in AI-driven financial insights
-
----
-
-## 📈 Future Enhancements
-
-- Integrate **OpenAI API** or **LLMs** for contextual analysis  
-- Deploy via **Flask**/**Streamlit** for a web-based experience  
-- Add **PDF parser** support for raw SEC document formats  
-- Plug into real-time **EDGAR** database for live filings
-
----
-
-## 🤝 Credits
-
-This project was built as part of the [Boston Consulting Group (BCG) x Forage GenAI Virtual Experience](https://www.theforage.com/virtual-internships/prototype/XwC6JhkrnciPp5NyQ/BCG-Generative-AI-Virtual-Experience-Program).
-
----
-
+Handles the filings it was built against, with a fixed question set. It does not
+generalise to arbitrary filings, and the rule-based extraction is tied to the
+statement structures it was written for — which is the honest trade for not
+letting a model invent the numbers.
